@@ -199,6 +199,32 @@ final spendingComparisonProvider = Provider<SpendingComparison?>((ref) {
   );
 });
 
+// Daily spending for the current month
+final dailySpendingProvider = Provider<List<DailySpend>>((ref) {
+  final transactions = ref.watch(transactionsProvider);
+  final now = DateTime.now();
+  final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+  
+  final Map<int, double> dailyTotals = {};
+  for (int i = 1; i <= daysInMonth; i++) {
+    dailyTotals[i] = 0.0;
+  }
+  
+  final thisMonthStart = DateTime(now.year, now.month, 1);
+  final expenses = transactions.where((t) => 
+    !t.isIncome && 
+    (t.date.isAfter(thisMonthStart) || t.date.isAtSameMomentAs(thisMonthStart))
+  );
+  
+  for (final t in expenses) {
+    final day = t.date.day;
+    dailyTotals[day] = (dailyTotals[day] ?? 0.0) + t.amount;
+  }
+  
+  return dailyTotals.entries.map((e) => DailySpend(day: e.key, amount: e.value)).toList()
+    ..sort((a, b) => a.day.compareTo(b.day));
+});
+
 // AI Spending Predictor (Projection for end of month)
 final spendingPredictorProvider = Provider<SpendingProjection?>((ref) {
   final transactions = ref.watch(transactionsProvider);
@@ -515,6 +541,16 @@ class WeeklySpending {
     required this.weekEnd,
     required this.total,
     required this.transactionCount,
+  });
+}
+
+class DailySpend {
+  final int day;
+  final double amount;
+
+  const DailySpend({
+    required this.day,
+    required this.amount,
   });
 }
 

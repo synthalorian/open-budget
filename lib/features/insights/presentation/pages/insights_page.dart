@@ -14,6 +14,8 @@ class InsightsPage extends ConsumerWidget {
     final projection = ref.watch(spendingPredictorProvider);
     final insights = ref.watch(spendingInsightsProvider);
     final suggestions = ref.watch(savingsOptimizerProvider);
+    final dailySpend = ref.watch(dailySpendingProvider);
+    final categoryBreakdown = ref.watch(categoryBreakdownProvider);
     final currency = NumberFormat.simpleCurrency(decimalDigits: 0);
 
     return Scaffold(
@@ -45,11 +47,11 @@ class InsightsPage extends ConsumerWidget {
               ],
               _buildSectionHeader('SPENDING VELOCITY'),
               const SizedBox(height: 16),
-              _buildVelocityChart(),
+              _buildVelocityChart(dailySpend, currency),
               const SizedBox(height: 32),
               _buildSectionHeader('DATA ALLOCATION'),
               const SizedBox(height: 16),
-              _buildCategoryPie(),
+              _buildCategoryPie(categoryBreakdown),
               const SizedBox(height: 32),
               _buildSectionHeader('SYSTEM INSIGHTS'),
               const SizedBox(height: 16),
@@ -208,70 +210,137 @@ class InsightsPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildVelocityChart() {
+  Widget _buildVelocityChart(List<DailySpend> dailySpend, NumberFormat currency) {
+    final spots = dailySpend.map((e) => FlSpot(e.day.toDouble(), e.amount)).toList();
+    
     return NeonCard(
       glowColor: AppColors.accent,
-      padding: const EdgeInsets.all(24),
-      child: SizedBox(
-        height: 200,
-        child: LineChart(
-          LineChartData(
-            gridData: const FlGridData(show: false),
-            titlesData: const FlTitlesData(show: false),
-            borderData: FlBorderData(show: false),
-            lineBarsData: [
-              LineChartBarData(
-                spots: const [
-                  FlSpot(0, 3),
-                  FlSpot(2.6, 2),
-                  FlSpot(4.9, 5),
-                  FlSpot(6.8, 3.1),
-                  FlSpot(8, 4),
-                  FlSpot(9.5, 3),
-                  FlSpot(11, 4),
-                ],
-                isCurved: true,
-                color: AppColors.accent,
-                barWidth: 3,
-                isStrokeCapRound: true,
-                dotData: const FlDotData(show: false),
-                belowBarData: BarAreaData(
-                  show: true,
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.accent.withOpacity(0.3),
-                      AppColors.accent.withOpacity(0),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+      padding: const EdgeInsets.fromLTRB(12, 24, 24, 12),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 200,
+            child: LineChart(
+              LineChartData(
+                lineTouchData: LineTouchData(
+                  touchTooltipData: LineTouchTooltipData(
+                    getTooltipColor: (touchedSpot) => AppColors.surface.withOpacity(0.8),
+                    getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
+                      return touchedBarSpots.map((barSpot) {
+                        return LineTooltipItem(
+                          'DAY ${barSpot.x.toInt()}\n',
+                          AppTextStyles.labelNeon.copyWith(color: AppColors.textPrimary, fontSize: 10),
+                          children: [
+                            TextSpan(
+                              text: currency.format(barSpot.y),
+                              style: AppTextStyles.headlineTitle.copyWith(
+                                color: AppColors.accent,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList();
+                    },
                   ),
                 ),
+                gridData: const FlGridData(show: false),
+                titlesData: FlTitlesData(
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 22,
+                      getTitlesWidget: (value, meta) {
+                        if (value % 5 != 0) return const SizedBox();
+                        return Text(
+                          value.toInt().toString(),
+                          style: AppTextStyles.labelNeon.copyWith(fontSize: 8, color: AppColors.textMuted),
+                        );
+                      },
+                    ),
+                  ),
+                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                ),
+                borderData: FlBorderData(show: false),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots.isEmpty ? [const FlSpot(0, 0)] : spots,
+                    isCurved: true,
+                    color: AppColors.accent,
+                    barWidth: 3,
+                    isStrokeCapRound: true,
+                    dotData: const FlDotData(show: false),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.accent.withOpacity(0.3),
+                          AppColors.accent.withOpacity(0),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+          const SizedBox(height: 8),
+          Text(
+            'TOUCH DATA POINTS FOR BIT-LEVEL DETAIL',
+            style: AppTextStyles.labelNeon.copyWith(fontSize: 8, color: AppColors.textMuted),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildCategoryPie() {
+  Widget _buildCategoryPie(List<CategoryBreakdown> breakdown) {
+    if (breakdown.isEmpty) {
+      return NeonCard(
+        child: Center(child: Text('NO ALLOCATION DATA', style: AppTextStyles.labelNeon)),
+      );
+    }
+
     return NeonCard(
       glowColor: AppColors.primary,
       padding: const EdgeInsets.all(24),
-      child: SizedBox(
-        height: 200,
-        child: PieChart(
-          PieChartData(
-            sectionsSpace: 4,
-            centerSpaceRadius: 40,
-            sections: [
-              PieChartSectionData(color: AppColors.primary, value: 40, title: '40%', radius: 50, titleStyle: AppTextStyles.labelNeon.copyWith(fontSize: 10, color: Colors.white)),
-              PieChartSectionData(color: AppColors.accent, value: 30, title: '30%', radius: 50, titleStyle: AppTextStyles.labelNeon.copyWith(fontSize: 10, color: Colors.white)),
-              PieChartSectionData(color: AppColors.expense, value: 15, title: '15%', radius: 50, titleStyle: AppTextStyles.labelNeon.copyWith(fontSize: 10, color: Colors.white)),
-              PieChartSectionData(color: AppColors.income, value: 15, title: '15%', radius: 50, titleStyle: AppTextStyles.labelNeon.copyWith(fontSize: 10, color: Colors.white)),
-            ],
+      child: Column(
+        children: [
+          SizedBox(
+            height: 200,
+            child: PieChart(
+              PieChartData(
+                sectionsSpace: 4,
+                centerSpaceRadius: 40,
+                sections: breakdown.map((c) => PieChartSectionData(
+                  color: Color(c.color),
+                  value: c.amount,
+                  title: '${c.percentage.toStringAsFixed(0)}%',
+                  radius: 50,
+                  titleStyle: AppTextStyles.labelNeon.copyWith(fontSize: 10, color: Colors.white),
+                )).toList(),
+              ),
+            ),
           ),
-        ),
+          const SizedBox(height: 24),
+          ...breakdown.take(4).map((c) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              children: [
+                Container(width: 8, height: 8, color: Color(c.color)),
+                const SizedBox(width: 8),
+                Text(c.categoryName.toUpperCase(), style: AppTextStyles.labelNeon.copyWith(fontSize: 8, color: AppColors.textSecondary)),
+                const Spacer(),
+                Text('${c.percentage.toStringAsFixed(1)}%', style: AppTextStyles.labelNeon.copyWith(fontSize: 8)),
+              ],
+            ),
+          )),
+        ],
       ),
     );
   }
