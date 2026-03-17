@@ -194,6 +194,36 @@ class AppConstants {
       content: 'Review your bank statement for recurring charges. If you haven\'t used the module in 30 days, terminate the link.',
       createdAt: DateTime.now(),
     ),
+    EducationContent(
+      id: 'strat_emergency',
+      title: 'EMERGENCY OVERRIDE',
+      description: 'Build a safety net for system failures.',
+      type: ContentType.course,
+      difficulty: DifficultyLevel.beginner,
+      iconName: 'shield_rounded',
+      content: 'Aim for 3-6 months of essential expenses in a high-yield savings module. This provides an override switch for life\'s unexpected crashes.',
+      createdAt: DateTime.now(),
+    ),
+    EducationContent(
+      id: 'strat_debt_snowball',
+      title: 'DEBT SNOWBALL PROTOCOL',
+      description: 'Crush liabilities from smallest to largest.',
+      type: ContentType.course,
+      difficulty: DifficultyLevel.intermediate,
+      iconName: 'bolt_rounded',
+      content: 'List all debts. Pay minimums on all but the smallest. Channel every spare bit into that one until it is purged. Repeat.',
+      createdAt: DateTime.now(),
+    ),
+    EducationContent(
+      id: 'strat_invest_auto',
+      title: 'AUTOMATED APPRECIATION',
+      description: 'Set your wealth to auto-grow.',
+      type: ContentType.tip,
+      difficulty: DifficultyLevel.beginner,
+      iconName: 'trending_up_rounded',
+      content: 'Set up an automated transfer to your investment module on payday. Take the human decision out of the loop.',
+      createdAt: DateTime.now(),
+    ),
   ];
   
   // Budget templates

@@ -123,6 +123,8 @@ class EducationDetailPage extends ConsumerWidget {
       case 'gamepad_rounded': return Icons.gamepad_rounded;
       case 'qr_code_scanner_rounded': return Icons.qr_code_scanner_rounded;
       case 'auto_delete_rounded': return Icons.auto_delete_rounded;
+      case 'trending_up_rounded': return Icons.trending_up_rounded;
+      case 'bolt_rounded': return Icons.bolt_rounded;
       default: return Icons.school_rounded;
     }
   }

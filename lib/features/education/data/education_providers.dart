@@ -53,6 +53,7 @@ final userRankProvider = Provider<String>((ref) {
   final progress = ref.watch(userProgressProvider);
   final completedCount = progress.values.where((p) => p.isCompleted).length;
   
+  if (completedCount >= 7) return 'THE_ARCHITECT';
   if (completedCount >= 4) return 'MAINFRAME_MASTER';
   if (completedCount >= 2) return 'GRID_RUNNER';
   return 'NEW_USER';

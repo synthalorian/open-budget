@@ -20,6 +20,7 @@ class HomePage extends ConsumerWidget {
     final insights = ref.watch(spendingInsightsProvider);
     final db = ref.watch(databaseProvider);
     final currencyFormat = NumberFormat.simpleCurrency(decimalDigits: 0);
+    final healthScore = ref.watch(healthScoreProvider);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -39,7 +40,7 @@ class HomePage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildCoreBalance(balance, income, expenses, currencyFormat),
+              _buildCoreBalance(balance, income, expenses, currencyFormat, healthScore),
               const SizedBox(height: 32),
               _buildSectionHeader('QUICK ACCESS'),
               const SizedBox(height: 16),
@@ -66,13 +67,19 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildCoreBalance(double balance, double income, double expenses, NumberFormat currency) {
+  Widget _buildCoreBalance(double balance, double income, double expenses, NumberFormat currency, int healthScore) {
     return NeonCard(
       glowColor: AppColors.accent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('TOTAL LIQUIDITY', style: AppTextStyles.labelNeon.copyWith(fontSize: 10)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('TOTAL LIQUIDITY', style: AppTextStyles.labelNeon.copyWith(fontSize: 10)),
+              _buildHealthBadge(healthScore),
+            ],
+          ),
           const SizedBox(height: 8),
           Text(
             currency.format(balance),
@@ -92,6 +99,24 @@ class HomePage extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildHealthBadge(int score) {
+    final color = score > 80 
+        ? AppColors.income 
+        : score > 50 
+            ? AppColors.warning 
+            : AppColors.expense;
+            
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: color.withOpacity(0.5)),
+      ),
+      child: Text('HEALTH: $score%', style: AppTextStyles.labelNeon.copyWith(fontSize: 8, color: color)),
     );
   }
 
