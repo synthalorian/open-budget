@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/neon_ui_kit.dart';
-import '../../data/notification_settings_provider.dart';
+import '../data/notification_settings_provider.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -15,6 +16,7 @@ class OnboardingPage extends ConsumerStatefulWidget {
 class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  bool _isRunningDiagnostics = false;
 
   final List<OnboardingSlide> _slides = [
     OnboardingSlide(
@@ -43,8 +45,16 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     ),
   ];
 
+  void _startDiagnostics() {
+    setState(() => _isRunningDiagnostics = true);
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isRunningDiagnostics) {
+      return const DiagnosticsConsole();
+    }
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(gradient: AppColors.spaceGradient),
@@ -122,10 +132,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   Widget _buildActionButton() {
     final isLast = _currentPage == _slides.length - 1;
     return TextButton(
-      onPressed: () async {
+      onPressed: () {
         if (isLast) {
-          await ref.read(notificationSettingsProvider.notifier).setOnboardingComplete();
-          if (mounted) context.go('/');
+          _startDiagnostics();
         } else {
           _pageController.nextPage(
             duration: const Duration(milliseconds: 500),
@@ -139,6 +148,134 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           color: AppColors.accent,
           fontSize: 16,
         ),
+      ),
+    );
+  }
+}
+
+class DiagnosticsConsole extends ConsumerStatefulWidget {
+  const DiagnosticsConsole({super.key});
+
+  @override
+  ConsumerState<DiagnosticsConsole> createState() => _DiagnosticsConsoleState();
+}
+
+class _DiagnosticsConsoleState extends ConsumerState<DiagnosticsConsole> {
+  final List<String> _log = [];
+  int _currentLine = 0;
+  late Timer _timer;
+
+  final List<String> _bootSequence = [
+    'SYSTEM_BOOT_SEQUENCE_ALPHA_LOAD...',
+    'INITIALIZING_KERNEL_V0.1.0',
+    'MOUNTING_LOCAL_HIVE_DATABASE...',
+    'CONNECTING_TO_THE_GRID...',
+    'LOADING_NEON_PALETTE_RESOURCES...',
+    'CALIBRATING_PULSE_ORBS...',
+    'SYNCING_AI_PROJECTION_ENGINES...',
+    'SCANNING_FOR_ANOMALIES...',
+    'OPTIMIZING_DOJO_MODULES...',
+    'ACCESS_GRANTED.',
+    'WELCOME_TO_THE_GRID_USER_SYNTH_X_84',
+    'MAINFRAME_ONLINE.'
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(milliseconds: 400), (timer) {
+      if (_currentLine < _bootSequence.length) {
+        setState(() {
+          _log.add(_bootSequence[_currentLine]);
+          _currentLine++;
+        });
+      } else {
+        timer.cancel();
+        _completeOnboarding();
+      }
+    });
+  }
+
+  Future<void> _completeOnboarding() async {
+    await Future.delayed(const Duration(seconds: 1));
+    await ref.read(notificationSettingsProvider.notifier).setOnboardingComplete();
+    if (mounted) context.go('/');
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // Background Glow
+          Center(
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.1),
+                    blurRadius: 100,
+                    spreadRadius: 50,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Log Text
+          Padding(
+            padding: const EdgeInsets.all(40),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 100),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _log.length,
+                    itemBuilder: (context, index) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        '> ${_log[index]}',
+                        style: AppTextStyles.labelNeon.copyWith(
+                          color: _log[index] == 'MAINFRAME_ONLINE.' 
+                              ? AppColors.income 
+                              : AppColors.accent,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Scanline Effect
+          IgnorePointer(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.1),
+                    Colors.transparent,
+                  ],
+                  stops: const [0.48, 0.5, 0.52],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
