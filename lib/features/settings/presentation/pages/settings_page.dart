@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/neon_ui_kit.dart';
 import '../../data/notification_settings_provider.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
+
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,13 +33,31 @@ class SettingsPage extends ConsumerWidget {
           children: [
             _buildSectionHeader('IDENTITY'),
             const SizedBox(height: 16),
-            _buildSettingsItem(context, 'USER PROFILE', 'SYNTH_X_84', Icons.person_rounded, AppColors.primary, null),
-            _buildSettingsItem(context, 'CURRENCY PROTOCOL', 'USD (\$)', Icons.monetization_on_rounded, AppColors.primary, null),
+            _buildSettingsItem(
+              title: 'USER PROFILE',
+              value: 'SYNTH_X_84',
+              icon: Icons.person_rounded,
+              color: AppColors.primary,
+              onTap: null,
+            ),
+            _buildSettingsItem(
+              title: 'CURRENCY PROTOCOL',
+              value: 'USD (\$)',
+              icon: Icons.monetization_on_rounded,
+              color: AppColors.primary,
+              onTap: null,
+            ),
             
             const SizedBox(height: 32),
             _buildSectionHeader('MODULES'),
             const SizedBox(height: 16),
-            _buildSettingsItem(context, 'SPENDING CATEGORIES', 'CUSTOMIZE DATA_MODULES', Icons.category_rounded, AppColors.accent, '/categories'),
+            _buildSettingsItem(
+              title: 'SPENDING CATEGORIES',
+              value: 'CUSTOMIZE DATA_MODULES',
+              icon: Icons.category_rounded,
+              color: AppColors.accent,
+              onTap: () => context.push('/categories'),
+            ),
             
             const SizedBox(height: 32),
             _buildSectionHeader('ALERTS'),
@@ -63,13 +89,57 @@ class SettingsPage extends ConsumerWidget {
             const SizedBox(height: 32),
             _buildSectionHeader('DATA MANAGEMENT'),
             const SizedBox(height: 16),
-            _buildSettingsItem(context, 'CLOUD_UPLINK', 'ENCRYPTED_SYNC', Icons.cloud_sync_rounded, AppColors.accent, '/cloud-sync'),
-            _buildSettingsItem(context, 'EXPORT ARCHIVE', 'JSON / CSV', Icons.download_rounded, AppColors.accent, '/export'),
-            _buildSettingsItem(context, 'CLEAR MAIN FRAME', 'DESTRUCTIVE', Icons.delete_forever_rounded, AppColors.expense, null),
+            _buildSettingsItem(
+              title: 'CLOUD_UPLINK',
+              value: 'ENCRYPTED_SYNC',
+              icon: Icons.cloud_sync_rounded,
+              color: AppColors.accent,
+              onTap: () => context.push('/cloud-sync'),
+            ),
+            _buildSettingsItem(
+              title: 'EXPORT ARCHIVE',
+              value: 'JSON / CSV',
+              icon: Icons.download_rounded,
+              color: AppColors.accent,
+              onTap: () => context.push('/export'),
+            ),
+            _buildSettingsItem(
+              title: 'CLEAR MAIN FRAME',
+              value: 'DESTRUCTIVE',
+              icon: Icons.delete_forever_rounded,
+              color: AppColors.expense,
+              onTap: null,
+            ),
+
             const SizedBox(height: 32),
             _buildSectionHeader('SECURITY'),
             const SizedBox(height: 16),
-            _buildSettingsItem(context, 'BIOMETRIC LOCK', 'ENCRYPTED', Icons.fingerprint_rounded, AppColors.accent, null),
+            _buildSettingsItem(
+              title: 'BIOMETRIC LOCK',
+              value: 'ENCRYPTED',
+              icon: Icons.fingerprint_rounded,
+              color: AppColors.accent,
+              onTap: null,
+            ),
+
+            const SizedBox(height: 32),
+            _buildSectionHeader('DEVELOPMENT'),
+            const SizedBox(height: 16),
+            _buildSettingsItem(
+              title: 'OPEN SOURCE',
+              value: 'GITHUB_REPL_LINK',
+              icon: Icons.code_rounded,
+              color: AppColors.accent,
+              onTap: () => _launchUrl('https://github.com/synthalorian/open-budget'),
+            ),
+            _buildSettingsItem(
+              title: 'SUPPORT_UNIT',
+              value: 'BUY_ME_A_COFFEE',
+              icon: Icons.coffee_rounded,
+              color: AppColors.income,
+              onTap: () => _launchUrl('https://www.buymeacoffee.com/synthalorian'),
+            ),
+
             const SizedBox(height: 48),
             Center(
               child: Text(
@@ -94,31 +164,40 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildSettingsItem(BuildContext context, String title, String value, IconData icon, Color color, String? route) {
+  Widget _buildSettingsItem({
+    required String title,
+    required String value,
+    required IconData icon,
+    required Color color,
+    required VoidCallback? onTap,
+  }) {
     return GestureDetector(
-      onTap: route != null ? () => context.push(route) : null,
-      child: NeonCard(
-        padding: const EdgeInsets.all(16),
-        opacity: 0.2,
-        hasGlow: false,
-        borderColor: AppColors.surfaceLight,
-        child: Row(
-          children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: AppTextStyles.headlineTitle.copyWith(fontSize: 14)),
-                  const SizedBox(height: 4),
-                  Text(value, style: AppTextStyles.bodyMain.copyWith(fontSize: 10, color: color)),
-                ],
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        child: NeonCard(
+          padding: const EdgeInsets.all(16),
+          opacity: 0.2,
+          hasGlow: false,
+          borderColor: AppColors.surfaceLight,
+          child: Row(
+            children: [
+              Icon(icon, color: color, size: 24),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: AppTextStyles.headlineTitle.copyWith(fontSize: 14)),
+                    const SizedBox(height: 4),
+                    Text(value, style: AppTextStyles.bodyMain.copyWith(fontSize: 10, color: color)),
+                  ],
+                ),
               ),
-            ),
-            if (route != null)
-              const Icon(Icons.arrow_forward_ios_rounded, color: AppColors.textMuted, size: 16),
-          ],
+              if (onTap != null)
+                const Icon(Icons.arrow_forward_ios_rounded, color: AppColors.textMuted, size: 16),
+            ],
+          ),
         ),
       ),
     );
