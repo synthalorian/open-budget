@@ -20,15 +20,16 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       enableCollisionAlerts: fields[0] as bool,
       enableSystemCriticalAlerts: fields[1] as bool,
       enableVelocityWarnings: fields[2] as bool,
-      currencySymbol: fields[3] as String,
+      currencyCode: fields[3] as String,
       biometricEnabled: fields[4] as bool,
+      themeName: fields[5] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, AppSettings obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.enableCollisionAlerts)
       ..writeByte(1)
@@ -36,9 +37,11 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       ..writeByte(2)
       ..write(obj.enableVelocityWarnings)
       ..writeByte(3)
-      ..write(obj.currencySymbol)
+      ..write(obj.currencyCode)
       ..writeByte(4)
-      ..write(obj.biometricEnabled);
+      ..write(obj.biometricEnabled)
+      ..writeByte(5)
+      ..write(obj.themeName);
   }
 
   @override

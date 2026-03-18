@@ -1,39 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'neon_themes.dart';
 
 class AppColors {
-  // Brand Colors (The Grid Palette)
-  static const Color primary = Color(0xFF9D50BB); // Cyber Purple
-  static const Color secondary = Color(0xFF6E48AA); // Deep Violet
-  static const Color accent = Color(0xFF00F2FE); // Laser Cyan
+  // These will now be driven by the current theme
+  static Color get primary => currentTheme.primary;
+  static Color get secondary => currentTheme.secondary;
+  static Color get accent => currentTheme.accent;
   
-  // Semantic Colors (Neon Indicators)
-  static const Color income = Color(0xFF00FFB2); // Neon Mint
-  static const Color expense = Color(0xFFFF0055); // Blood Neon Red
-  static const Color warning = Color(0xFFFFD700); // Gold Glow
-  static const Color info = Color(0xFF00F2FE); // Laser Cyan
+  static Color get income => currentTheme.income;
+  static Color get expense => currentTheme.expense;
+  static Color get warning => currentTheme.warning;
+  static Color get info => currentTheme.accent;
   
-  // Neutral Colors (Space Gradients)
-  static const Color background = Color(0xFF0B0B15); // Deep Space
-  static const Color surface = Color(0xFF161625); // Mainframe Surface
-  static const Color surfaceLight = Color(0xFF212135); // Grid Lines
-  static const Color card = Color(0xFF1C1C2E); // Module Surface
+  static const Color background = Color(0xFF0B0B15); 
+  static const Color surface = Color(0xFF161625); 
+  static const Color surfaceLight = Color(0xFF212135); 
+  static const Color card = Color(0xFF1C1C2E); 
   
-  // Text Colors
   static const Color textPrimary = Color(0xFFFFFFFF);
   static const Color textSecondary = Color(0xFFB4B4C4);
   static const Color textMuted = Color(0xFF5A5A7A);
   
-  // Glow / Effects
-  static const List<BoxShadow> primaryGlow = [
+  // Global theme state holder (internal use)
+  static NeonTheme currentTheme = NeonThemes.synthwave;
+
+  static List<BoxShadow> get primaryGlow => [
     BoxShadow(
-      color: Color(0x4D9D50BB),
+      color: primary.withOpacity(0.3),
       blurRadius: 12,
       spreadRadius: 2,
     ),
   ];
   
-  static const LinearGradient neonGradient = LinearGradient(
+  static LinearGradient get neonGradient => LinearGradient(
     colors: [primary, accent],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -47,7 +47,6 @@ class AppColors {
 }
 
 class AppTextStyles {
-  // Use GoogleFonts for the Synthwave vibe
   static TextStyle get headlineMainframe => GoogleFonts.orbitron(
     fontSize: 28,
     fontWeight: FontWeight.bold,
@@ -82,16 +81,19 @@ class AppTextStyles {
 }
 
 class AppTheme {
-  static ThemeData get darkTheme {
+  static ThemeData createTheme(NeonTheme neonTheme) {
+    // Update the static holder for legacy code support
+    AppColors.currentTheme = neonTheme;
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.background,
       colorScheme: ColorScheme.dark(
-        primary: AppColors.primary,
-        secondary: AppColors.accent,
+        primary: neonTheme.primary,
+        secondary: neonTheme.accent,
         surface: AppColors.surface,
-        error: AppColors.expense,
+        error: neonTheme.expense,
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
@@ -104,29 +106,32 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: AppColors.surfaceLight, width: 1),
+          side: const BorderSide(color: AppColors.surfaceLight, width: 1),
         ),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.background.withOpacity(0.8),
-        selectedItemColor: AppColors.accent,
+        selectedItemColor: neonTheme.accent,
         unselectedItemColor: AppColors.textMuted,
         elevation: 0,
         type: BottomNavigationBarType.fixed,
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.background.withOpacity(0.8),
-        indicatorColor: AppColors.primary.withOpacity(0.2),
+        indicatorColor: neonTheme.primary.withOpacity(0.2),
         labelTextStyle: WidgetStateProperty.all(
           AppTextStyles.labelNeon.copyWith(fontSize: 10),
         ),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const IconThemeData(color: AppColors.accent);
+            return IconThemeData(color: neonTheme.accent);
           }
           return const IconThemeData(color: AppColors.textMuted);
         }),
       ),
     );
   }
+
+  // Legacy support
+  static ThemeData get darkTheme => createTheme(NeonThemes.synthwave);
 }

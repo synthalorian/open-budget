@@ -64,4 +64,9 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     final newSettings = state.copyWith(currencyCode: currencyCode);
     await updateSettings(newSettings);
   }
+
+  Future<void> setTheme(String themeName) async {
+    final newSettings = state.copyWith(themeName: themeName);
+    await updateSettings(newSettings);
+  }
 }

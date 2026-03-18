@@ -9,6 +9,8 @@ import 'features/settings/data/digest_service.dart';
 import 'features/settings/data/settings_providers.dart';
 import 'features/settings/presentation/pages/security_lock_screen.dart';
 
+import 'shared/providers/theme_provider.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -65,12 +67,13 @@ class _OpenBudgetAppState extends ConsumerState<OpenBudgetApp> {
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
     final router = ref.watch(routerProvider);
+    final theme = ref.watch(themeProvider);
 
     if (settings.biometricEnabled && !_isAuthenticated) {
       return MaterialApp(
         title: 'Open Budget',
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.darkTheme,
+        theme: theme,
         home: SecurityLockScreen(
           onAuthenticated: () => setState(() => _isAuthenticated = true),
         ),
@@ -80,7 +83,7 @@ class _OpenBudgetAppState extends ConsumerState<OpenBudgetApp> {
     return MaterialApp.router(
       title: 'Open Budget',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
+      theme: theme,
       routerConfig: router,
     );
   }
