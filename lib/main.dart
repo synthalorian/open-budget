@@ -21,7 +21,7 @@ void main() async {
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: AppColors.surface,
+      systemNavigationBarColor: AppColors.background,
       systemNavigationBarIconBrightness: Brightness.light,
     ),
   );
@@ -32,10 +32,10 @@ void main() async {
   
   runApp(
     ProviderScope(
-      child: const OpenBudgetApp(),
       observers: [
         _DigestObserver(),
       ],
+      child: const OpenBudgetApp(),
     ),
   );
 }
@@ -54,11 +54,13 @@ class OpenBudgetApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+    
     return MaterialApp.router(
       title: 'Open Budget',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      routerConfig: AppRouter.router(ref),
+      routerConfig: router,
     );
   }
 }

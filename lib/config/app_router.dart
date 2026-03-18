@@ -15,124 +15,117 @@ import '../features/settings/presentation/pages/cloud_sync_page.dart';
 import '../features/settings/data/export_service.dart';
 import '../features/settings/data/notification_settings_provider.dart';
 
-class AppRouter {
-  static final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
-  static final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
+final routerProvider = Provider<GoRouter>((ref) {
+  final onboardingComplete = ref.watch(notificationSettingsProvider).onboardingComplete;
 
-  static GoRouter router(WidgetRef ref) {
-    final onboardingComplete = ref.watch(notificationSettingsProvider).onboardingComplete;
-
-    return GoRouter(
-      navigatorKey: _rootNavigatorKey,
-      initialLocation: onboardingComplete ? '/' : '/onboarding',
-      debugLogDiagnostics: true,
-      routes: [
-        GoRoute(
-          path: '/onboarding',
-          name: 'onboarding',
-          builder: (context, state) => const OnboardingPage(),
-        ),
-        ShellRoute(
-          navigatorKey: _shellNavigatorKey,
-          builder: (context, state, child) => MainShell(child: child),
-          routes: [
-            GoRoute(
-              path: '/',
-              name: 'home',
-              pageBuilder: (context, state) => const NoTransitionPage(
-                child: HomePage(),
-              ),
+  return GoRouter(
+    navigatorKey: GlobalKey<NavigatorState>(debugLabel: 'root'),
+    initialLocation: onboardingComplete ? '/' : '/onboarding',
+    debugLogDiagnostics: true,
+    routes: [
+      GoRoute(
+        path: '/onboarding',
+        name: 'onboarding',
+        builder: (context, state) => const OnboardingPage(),
+      ),
+      ShellRoute(
+        navigatorKey: GlobalKey<NavigatorState>(debugLabel: 'shell'),
+        builder: (context, state, child) => MainShell(child: child),
+        routes: [
+          GoRoute(
+            path: '/',
+            name: 'home',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: HomePage(),
             ),
-            GoRoute(
-              path: '/budget',
-              name: 'budget',
-              pageBuilder: (context, state) => const NoTransitionPage(
-                child: BudgetPage(),
-              ),
-            ),
-            GoRoute(
-              path: '/goals',
-              name: 'goals',
-              pageBuilder: (context, state) => const NoTransitionPage(
-                child: GoalsPage(),
-              ),
-            ),
-            GoRoute(
-              path: '/insights',
-              name: 'insights',
-              pageBuilder: (context, state) => const NoTransitionPage(
-                child: InsightsPage(),
-              ),
-            ),
-            GoRoute(
-              path: '/education',
-              name: 'education',
-              pageBuilder: (context, state) => const NoTransitionPage(
-                child: EducationPage(),
-              ),
-              routes: [
-                GoRoute(
-                  path: ':id',
-                  name: 'educationDetail',
-                  builder: (context, state) {
-                    final id = state.pathParameters['id']!;
-                    return EducationDetailPage(contentId: id);
-                  },
-                ),
-              ],
-            ),
-            GoRoute(
-              path: '/settings',
-              name: 'settings',
-              pageBuilder: (context, state) => const NoTransitionPage(
-                child: SettingsPage(),
-              ),
-            ),
-            GoRoute(
-              path: '/categories',
-              name: 'categories',
-              pageBuilder: (context, state) => const NoTransitionPage(
-                child: CategoriesPage(),
-              ),
-            ),
-            GoRoute(
-              path: '/cloud-sync',
-              name: 'cloudSync',
-              pageBuilder: (context, state) => const NoTransitionPage(
-                child: CloudSyncPage(),
-              ),
-            ),
-          ],
-        ),
-        GoRoute(
-          path: '/add-transaction',
-          name: 'addTransaction',
-          parentNavigatorKey: _rootNavigatorKey,
-          pageBuilder: (context, state) {
-            final isIncome = state.uri.queryParameters['type'] == 'income';
-            return MaterialPage(
-              child: AddTransactionPage(isIncome: isIncome),
-            );
-          },
-        ),
-        GoRoute(
-          path: '/export',
-          name: 'export',
-          parentNavigatorKey: _rootNavigatorKey,
-          pageBuilder: (context, state) => const MaterialPage(
-            child: ExportPage(),
           ),
+          GoRoute(
+            path: '/budget',
+            name: 'budget',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: BudgetPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/goals',
+            name: 'goals',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: GoalsPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/insights',
+            name: 'insights',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: InsightsPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/education',
+            name: 'education',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: EducationPage(),
+            ),
+            routes: [
+              GoRoute(
+                path: ':id',
+                name: 'educationDetail',
+                builder: (context, state) {
+                  final id = state.pathParameters['id']!;
+                  return EducationDetailPage(contentId: id);
+                },
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/settings',
+            name: 'settings',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: SettingsPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/categories',
+            name: 'categories',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: CategoriesPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/cloud-sync',
+            name: 'cloudSync',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: CloudSyncPage(),
+            ),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/add-transaction',
+        name: 'addTransaction',
+        pageBuilder: (context, state) {
+          final isIncome = state.uri.queryParameters['type'] == 'income';
+          return MaterialPage(
+            child: AddTransactionPage(isIncome: isIncome),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/export',
+        name: 'export',
+        pageBuilder: (context, state) => const MaterialPage(
+          child: ExportPage(),
         ),
-      ],
-      redirect: (context, state) {
-        final isLoggingIn = state.uri.toString() == '/onboarding';
-        if (!onboardingComplete && !isLoggingIn) return '/onboarding';
-        if (onboardingComplete && isLoggingIn) return '/';
-        return null;
-      },
-    );
-  }
-}
+      ),
+    ],
+    redirect: (context, state) {
+      final isLoggingIn = state.uri.toString() == '/onboarding';
+      if (!onboardingComplete && !isLoggingIn) return '/onboarding';
+      if (onboardingComplete && isLoggingIn) return '/';
+      return null;
+    },
+  );
+});
 
 class MainShell extends StatelessWidget {
   final Widget child;
