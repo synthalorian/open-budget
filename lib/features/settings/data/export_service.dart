@@ -222,7 +222,7 @@ class ExportPage extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          const Icon(
+          Icon(
             Icons.file_download,
             size: 48,
             color: AppColors.primary,
@@ -367,7 +367,7 @@ class ExportPage extends ConsumerWidget {
                     color: AppColors.accent.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.backup, color: AppColors.accent, size: 20),
+                  child: Icon(Icons.backup, color: AppColors.accent, size: 20),
                 ),
                 title: const Text('Backup Data'),
                 subtitle: const Text('Create a local backup file'),
@@ -382,7 +382,7 @@ class ExportPage extends ConsumerWidget {
                     color: AppColors.warning.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.restore, color: AppColors.warning, size: 20),
+                  child: Icon(Icons.restore, color: AppColors.warning, size: 20),
                 ),
                 title: const Text('Import Data'),
                 subtitle: const Text('Restore from backup file'),
@@ -401,7 +401,7 @@ class ExportPage extends ConsumerWidget {
                     color: AppColors.expense.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.delete_outline, color: AppColors.expense, size: 20),
+                  child: Icon(Icons.delete_outline, color: AppColors.expense, size: 20),
                 ),
                 title: const Text('Clear All Data'),
                 subtitle: const Text('Delete all transactions and budgets'),
@@ -465,7 +465,7 @@ class ExportPage extends ConsumerWidget {
       
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Backup created successfully!'),
             backgroundColor: AppColors.income,
           ),
@@ -505,7 +505,7 @@ class ExportPage extends ConsumerWidget {
               if (context.mounted) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     content: Text('All data cleared'),
                     backgroundColor: AppColors.expense,
                   ),
