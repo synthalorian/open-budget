@@ -81,7 +81,9 @@ class RecurringPage extends ConsumerWidget {
     final color = Color(category?.color ?? 0xFF9D50BB);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: NeonCard(
+      child: GestureDetector(
+        onLongPress: () => _showDeleteConfirm(context, ref, r),
+        child: NeonCard(
         glowColor: r.isActive ? color : AppColors.textMuted,
         opacity: r.isActive ? 0.2 : 0.1,
         child: Row(
@@ -120,6 +122,31 @@ class RecurringPage extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+      ),
+    );
+  }
+
+  void _showDeleteConfirm(BuildContext context, WidgetRef ref, RecurringTransaction r) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text('DELETE RECURRING', style: AppTextStyles.labelNeon.copyWith(color: AppColors.expense)),
+        content: Text('Delete "${r.description}"?', style: AppTextStyles.bodyMain),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('CANCEL', style: TextStyle(color: AppColors.textMuted)),
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(recurringNotifierProvider.notifier).deleteRecurring(r.id);
+              Navigator.pop(ctx);
+            },
+            child: Text('TERMINATE', style: TextStyle(color: AppColors.expense)),
+          ),
+        ],
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/database/database_service.dart';
 import 'core/services/notification_service.dart';
+import 'core/services/encryption_service.dart';
 import 'core/theme/app_theme.dart';
 import 'config/app_router.dart';
 import 'features/settings/data/digest_service.dart';
@@ -33,6 +34,7 @@ void main() async {
   // Initialize services
   await DatabaseService().initialize();
   await NotificationService().initialize();
+  await EncryptionService().initialize();
   
   runApp(
     ProviderScope(

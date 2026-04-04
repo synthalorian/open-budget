@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../features/budget/presentation/pages/budget_page.dart';
-import '../features/budget/presentation/pages/recurring_page.dart';
 import '../features/transactions/presentation/pages/home_page.dart';
 import '../features/transactions/presentation/pages/add_transaction_page.dart';
 import '../features/goals/presentation/pages/goals_page.dart';
+import '../features/goals/presentation/pages/add_goal_page.dart';
 import '../features/insights/presentation/pages/insights_page.dart';
 import '../features/education/presentation/pages/education_page.dart';
 import '../features/education/presentation/pages/education_detail_page.dart';
 import '../features/categories/presentation/pages/categories_page.dart';
-import '../features/budget/presentation/pages/recurring_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/settings/presentation/pages/onboarding_page.dart';
 import '../features/settings/presentation/pages/cloud_sync_page.dart';
@@ -54,6 +53,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) => const NoTransitionPage(
               child: GoalsPage(),
             ),
+            routes: [
+              GoRoute(
+                path: 'add',
+                name: 'add-goal',
+                builder: (context, state) => const AddGoalPage(),
+              ),
+            ],
           ),
           GoRoute(
             path: '/insights',

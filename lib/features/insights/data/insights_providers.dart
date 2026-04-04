@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/domain/entities/transaction.dart';
 import '../../../core/services/notification_service.dart';
 import '../../../shared/providers/database_provider.dart';
 import '../../transactions/data/transaction_providers.dart';

@@ -17,7 +17,7 @@ class HomePage extends ConsumerWidget {
     final income = ref.watch(currentMonthIncomeProvider);
     final expenses = ref.watch(currentMonthExpensesProvider);
     final transactions = ref.watch(transactionsProvider);
-    final insights = ref.watch(spendingInsightsProvider);
+    ref.watch(spendingInsightsProvider); // Keep provider active for notifications
     final db = ref.watch(databaseProvider);
     final currencyFormat = NumberFormat.simpleCurrency(decimalDigits: 0);
     final healthScore = ref.watch(healthScoreProvider);

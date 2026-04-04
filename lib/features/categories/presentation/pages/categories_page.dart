@@ -67,11 +67,16 @@ class CategoriesPage extends ConsumerWidget {
               ],
             ),
           ),
-          if (!category.isSystem)
+          if (!category.isSystem) ...[
+            IconButton(
+              icon: Icon(Icons.edit_rounded, color: AppColors.accent, size: 20),
+              onPressed: () => _showEditCategorySheet(context, ref, category),
+            ),
             IconButton(
               icon: Icon(Icons.delete_outline_rounded, color: AppColors.expense, size: 20),
               onPressed: () => _showDeleteConfirm(context, ref, category),
             ),
+          ],
         ],
       ),
     );
@@ -209,6 +214,62 @@ class CategoriesPage extends ConsumerWidget {
             border: Border.all(color: isSelected ? AppColors.primary : Colors.transparent),
           ),
           child: Text(label, style: AppTextStyles.labelNeon.copyWith(fontSize: 10, color: isSelected ? Colors.white : AppColors.textMuted), textAlign: TextAlign.center),
+        ),
+      ),
+    );
+  }
+
+  void _showEditCategorySheet(BuildContext context, WidgetRef ref, Category category) {
+    String name = category.name;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) => Padding(
+          padding: EdgeInsets.only(
+            left: 24, right: 24, top: 24,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('EDIT MODULE', style: AppTextStyles.headlineMainframe),
+              const SizedBox(height: 24),
+              TextField(
+                controller: TextEditingController(text: name),
+                onChanged: (v) => name = v,
+                style: AppTextStyles.headlineTitle,
+                decoration: InputDecoration(
+                  labelText: 'MODULE NAME',
+                  labelStyle: AppTextStyles.labelNeon.copyWith(fontSize: 10),
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (name.trim().isNotEmpty) {
+                      ref.read(categoryNotifierProvider.notifier).updateCategory(
+                        category.copyWith(name: name.trim()),
+                      );
+                      Navigator.pop(ctx);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.accent,
+                    foregroundColor: AppColors.background,
+                  ),
+                  child: Text('SAVE CHANGES', style: AppTextStyles.labelNeon.copyWith(color: AppColors.background)),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

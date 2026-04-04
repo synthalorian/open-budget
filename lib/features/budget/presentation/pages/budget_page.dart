@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/neon_ui_kit.dart';
 import '../../data/budget_providers.dart';
-import '../../../transactions/data/transaction_providers.dart';
 import '../../../../shared/providers/database_provider.dart';
 
 class BudgetPage extends ConsumerWidget {

@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/database/database_service.dart';
 import '../../../core/domain/entities/education.dart';
 import '../../../shared/providers/database_provider.dart';
 import '../../../core/constants/app_constants.dart';

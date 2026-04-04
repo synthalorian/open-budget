@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/database/database_service.dart';
 import '../../../core/services/notification_service.dart';
 import '../../../shared/providers/database_provider.dart';
 import '../../insights/data/insights_providers.dart';
