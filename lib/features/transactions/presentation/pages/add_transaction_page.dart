@@ -219,7 +219,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
       createdAt: DateTime.now(),
     );
     await DatabaseService().transactions.put(transaction.id, transaction);
-    if (!context.mounted) return;
+    if (!mounted) return;
     context.pop();
   }
 

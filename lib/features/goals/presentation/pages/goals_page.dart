@@ -220,11 +220,11 @@ class GoalsPage extends ConsumerWidget {
             height: 8,
             decoration: BoxDecoration(
               gradient:
-                  LinearGradient(colors: [color.withOpacity(0.4), color]),
+                  LinearGradient(colors: [color.withValues(alpha: 0.4), color]),
               borderRadius: BorderRadius.circular(4),
               boxShadow: [
                 BoxShadow(
-                    color: color.withOpacity(0.5),
+                    color: color.withValues(alpha: 0.5),
                     blurRadius: 8,
                     spreadRadius: 1),
               ],

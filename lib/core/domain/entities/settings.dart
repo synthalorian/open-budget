@@ -23,6 +23,9 @@ class AppSettings extends Equatable {
   @HiveField(5)
   final String themeName;
 
+  @HiveField(6)
+  final String userName;
+
   const AppSettings({
     this.enableCollisionAlerts = true,
     this.enableSystemCriticalAlerts = true,
@@ -30,6 +33,7 @@ class AppSettings extends Equatable {
     this.currencyCode = 'USD',
     this.biometricEnabled = false,
     this.themeName = 'synthwave',
+    this.userName = 'SYNTH_X_84',
   });
 
   String get currencySymbol {
@@ -80,6 +84,7 @@ class AppSettings extends Equatable {
     String? currencyCode,
     bool? biometricEnabled,
     String? themeName,
+    String? userName,
   }) {
     return AppSettings(
       enableCollisionAlerts: enableCollisionAlerts ?? this.enableCollisionAlerts,
@@ -88,6 +93,7 @@ class AppSettings extends Equatable {
       currencyCode: currencyCode ?? this.currencyCode,
       biometricEnabled: biometricEnabled ?? this.biometricEnabled,
       themeName: themeName ?? this.themeName,
+      userName: userName ?? this.userName,
     );
   }
 
@@ -99,5 +105,6 @@ class AppSettings extends Equatable {
         currencyCode,
         biometricEnabled,
         themeName,
+        userName,
       ];
 }

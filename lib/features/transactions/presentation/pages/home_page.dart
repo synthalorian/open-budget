@@ -29,7 +29,8 @@ class HomePage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.bolt_rounded, color: AppColors.accent),
-            onPressed: () {},
+            tooltip: 'INSIGHTS',
+            onPressed: () => context.go('/insights'),
           ),
         ],
       ),
@@ -112,9 +113,9 @@ class HomePage extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text('HEALTH: $score%', style: AppTextStyles.labelNeon.copyWith(fontSize: 8, color: color)),
     );
@@ -146,7 +147,7 @@ class HomePage extends ConsumerWidget {
         const SizedBox(width: 12),
         Expanded(child: _buildSmallAction(Icons.add_circle_outline, 'INCOME', AppColors.income, () => context.push('/add-transaction?type=income'))),
         const SizedBox(width: 12),
-        Expanded(child: _buildSmallAction(Icons.swap_horiz_rounded, 'SYNC', AppColors.accent, () {})),
+        Expanded(child: _buildSmallAction(Icons.swap_horiz_rounded, 'SYNC', AppColors.accent, () => context.push('/cloud-sync'))),
       ],
     );
   }
@@ -181,7 +182,7 @@ class HomePage extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(_getIcon(category?.iconName ?? 'more_horiz'), color: color, size: 20),

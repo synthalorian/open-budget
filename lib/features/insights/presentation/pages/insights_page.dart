@@ -114,7 +114,7 @@ class InsightsPage extends ConsumerWidget {
                   }
                 },
                 style: TextButton.styleFrom(
-                  backgroundColor: AppColors.accent.withOpacity(0.1),
+                  backgroundColor: AppColors.accent.withValues(alpha: 0.1),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -149,9 +149,9 @@ class InsightsPage extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.2),
+                  color: statusColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: statusColor.withOpacity(0.5)),
+                  border: Border.all(color: statusColor.withValues(alpha: 0.5)),
                 ),
                 child: Text(projection.healthStatus, style: AppTextStyles.labelNeon.copyWith(fontSize: 8, color: statusColor)),
               ),
@@ -224,7 +224,7 @@ class InsightsPage extends ConsumerWidget {
               LineChartData(
                 lineTouchData: LineTouchData(
                   touchTooltipData: LineTouchTooltipData(
-                    getTooltipColor: (touchedSpot) => AppColors.surface.withOpacity(0.8),
+                    getTooltipColor: (touchedSpot) => AppColors.surface.withValues(alpha: 0.8),
                     getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
                       return touchedBarSpots.map((barSpot) {
                         return LineTooltipItem(
@@ -277,8 +277,8 @@ class InsightsPage extends ConsumerWidget {
                       show: true,
                       gradient: LinearGradient(
                         colors: [
-                          AppColors.accent.withOpacity(0.3),
-                          AppColors.accent.withOpacity(0),
+                          AppColors.accent.withValues(alpha: 0.3),
+                          AppColors.accent.withValues(alpha: 0),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,

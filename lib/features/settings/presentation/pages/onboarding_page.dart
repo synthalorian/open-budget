@@ -123,7 +123,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         color: active ? AppColors.accent : AppColors.textMuted,
         borderRadius: BorderRadius.circular(4),
         boxShadow: active ? [
-          BoxShadow(color: AppColors.accent.withOpacity(0.5), blurRadius: 8),
+          BoxShadow(color: AppColors.accent.withValues(alpha: 0.5), blurRadius: 8),
         ] : null,
       ),
     );
@@ -223,7 +223,7 @@ class _DiagnosticsConsoleState extends ConsumerState<DiagnosticsConsole> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     blurRadius: 100,
                     spreadRadius: 50,
                   ),
@@ -267,7 +267,7 @@ class _DiagnosticsConsoleState extends ConsumerState<DiagnosticsConsole> {
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    Colors.black.withOpacity(0.1),
+                    Colors.black.withValues(alpha: 0.1),
                     Colors.transparent,
                   ],
                   stops: const [0.48, 0.5, 0.52],

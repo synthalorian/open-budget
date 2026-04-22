@@ -23,13 +23,14 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       currencyCode: fields[3] as String,
       biometricEnabled: fields[4] as bool,
       themeName: fields[5] as String,
+      userName: fields[6] as String? ?? 'SYNTH_X_84',
     );
   }
 
   @override
   void write(BinaryWriter writer, AppSettings obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.enableCollisionAlerts)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       ..writeByte(4)
       ..write(obj.biometricEnabled)
       ..writeByte(5)
-      ..write(obj.themeName);
+      ..write(obj.themeName)
+      ..writeByte(6)
+      ..write(obj.userName);
   }
 
   @override

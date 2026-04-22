@@ -89,11 +89,4 @@ class DatabaseService {
     // Keep settings for user preferences
   }
 
-  Future<void> exportData() async {
-    // TODO: Implement export to JSON/CSV
-  }
-
-  Future<void> importData() async {
-    // TODO: Implement import from JSON/CSV
-  }
 }

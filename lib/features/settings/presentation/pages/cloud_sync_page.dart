@@ -48,7 +48,7 @@ class CloudSyncPage extends ConsumerWidget {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: AppColors.accent.withOpacity(0.1),
+                            color: AppColors.accent.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(Icons.cloud_upload_rounded, color: AppColors.accent, size: 24),
@@ -104,7 +104,7 @@ class CloudSyncPage extends ConsumerWidget {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
+                            color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(Icons.cloud_download_rounded, color: AppColors.primary, size: 24),

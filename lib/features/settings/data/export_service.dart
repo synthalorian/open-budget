@@ -305,7 +305,7 @@ class ExportPage extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
+                color: color.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color),
@@ -364,7 +364,7 @@ class ExportPage extends ConsumerWidget {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.accent.withOpacity(0.2),
+                    color: AppColors.accent.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(Icons.backup, color: AppColors.accent, size: 20),
@@ -379,7 +379,7 @@ class ExportPage extends ConsumerWidget {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.warning.withOpacity(0.2),
+                    color: AppColors.warning.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(Icons.restore, color: AppColors.warning, size: 20),
@@ -398,7 +398,7 @@ class ExportPage extends ConsumerWidget {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.expense.withOpacity(0.2),
+                    color: AppColors.expense.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(Icons.delete_outline, color: AppColors.expense, size: 20),
@@ -406,7 +406,7 @@ class ExportPage extends ConsumerWidget {
                 title: const Text('Clear All Data'),
                 subtitle: const Text('Delete all transactions and budgets'),
                 trailing: Icon(Icons.chevron_right),
-                onTap: () => _showClearDataDialog(context, ref),
+                onTap: () => showClearDataDialog(context, ref),
               ),
             ],
           ),
@@ -485,40 +485,40 @@ class ExportPage extends ConsumerWidget {
     }
   }
 
-  void _showClearDataDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: const Text('Clear All Data?'),
-        content: const Text(
-          'This will permanently delete all your transactions, budgets, and goals. This action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await DatabaseService().clearAllData();
-              if (context.mounted) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('All data cleared'),
-                    backgroundColor: AppColors.expense,
-                  ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.expense,
-            ),
-            child: const Text('Delete All'),
-          ),
-        ],
+}
+
+void showClearDataDialog(BuildContext context, WidgetRef ref) {
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: AppColors.surface,
+      title: Text('CLEAR_MAIN_FRAME', style: AppTextStyles.labelNeon.copyWith(color: AppColors.expense)),
+      content: Text(
+        'PERMANENT_WIPE of transactions, budgets, goals, and recurring protocols. This cannot be undone.',
+        style: AppTextStyles.bodyMain,
       ),
-    );
-  }
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx),
+          child: Text('CANCEL', style: TextStyle(color: AppColors.textMuted)),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            await DatabaseService().clearAllData();
+            if (ctx.mounted) {
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('MAIN_FRAME WIPED'),
+                  backgroundColor: AppColors.expense,
+                ),
+              );
+            }
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: AppColors.expense),
+          child: const Text('TERMINATE'),
+        ),
+      ],
+    ),
+  );
 }

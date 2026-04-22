@@ -91,7 +91,7 @@ class RecurringPage extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(_getIcon(category?.iconName ?? 'more_horiz'), color: color, size: 20),
@@ -115,7 +115,7 @@ class RecurringPage extends ConsumerWidget {
                   child: Switch(
                     value: r.isActive, 
                     onChanged: (val) => ref.read(recurringNotifierProvider.notifier).toggleActive(r.id, val),
-                    activeColor: AppColors.accent,
+                    activeThumbColor: AppColors.accent,
                   ),
                 ),
               ],

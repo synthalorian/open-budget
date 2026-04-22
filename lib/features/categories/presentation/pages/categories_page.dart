@@ -51,9 +51,9 @@ class CategoriesPage extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: color.withOpacity(0.3)),
+              border: Border.all(color: color.withValues(alpha: 0.3)),
             ),
             child: Icon(_getIcon(category.iconName), color: color, size: 24),
           ),
@@ -169,7 +169,7 @@ class CategoriesPage extends ConsumerWidget {
                         color: c,
                         shape: BoxShape.circle,
                         border: Border.all(color: selectedColor == c.value ? Colors.white : Colors.transparent, width: 2),
-                        boxShadow: [BoxShadow(color: c.withOpacity(0.4), blurRadius: 8)],
+                        boxShadow: [BoxShadow(color: c.withValues(alpha: 0.4), blurRadius: 8)],
                       ),
                     ),
                   )).toList(),
@@ -209,7 +209,7 @@ class CategoriesPage extends ConsumerWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.primary.withOpacity(0.2) : AppColors.surfaceLight,
+            color: isSelected ? AppColors.primary.withValues(alpha: 0.2) : AppColors.surfaceLight,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: isSelected ? AppColors.primary : Colors.transparent),
           ),

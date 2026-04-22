@@ -26,9 +26,9 @@ class EducationPage extends ConsumerWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: AppColors.accent.withOpacity(0.2),
+                  color: AppColors.accent.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: AppColors.accent.withOpacity(0.5)),
+                  border: Border.all(color: AppColors.accent.withValues(alpha: 0.5)),
                 ),
                 child: Text(rank, style: AppTextStyles.labelNeon.copyWith(fontSize: 8, color: AppColors.accent)),
               ),
@@ -120,8 +120,8 @@ class EducationPage extends ConsumerWidget {
               onPressed: () => context.push('/education/${item.id}'),
               style: TextButton.styleFrom(
                 backgroundColor: isDone 
-                    ? AppColors.accent.withOpacity(0.1)
-                    : AppColors.primary.withOpacity(0.1),
+                    ? AppColors.accent.withValues(alpha: 0.1)
+                    : AppColors.primary.withValues(alpha: 0.1),
                 side: BorderSide(color: isDone ? AppColors.accent : AppColors.primary),
               ),
               child: Text(

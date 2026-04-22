@@ -27,7 +27,7 @@ class AppColors {
 
   static List<BoxShadow> get primaryGlow => [
     BoxShadow(
-      color: primary.withOpacity(0.3),
+      color: primary.withValues(alpha: 0.3),
       blurRadius: 12,
       spreadRadius: 2,
     ),
@@ -110,15 +110,15 @@ class AppTheme {
         ),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: AppColors.background.withOpacity(0.8),
+        backgroundColor: AppColors.background.withValues(alpha: 0.8),
         selectedItemColor: neonTheme.accent,
         unselectedItemColor: AppColors.textMuted,
         elevation: 0,
         type: BottomNavigationBarType.fixed,
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: AppColors.background.withOpacity(0.8),
-        indicatorColor: neonTheme.primary.withOpacity(0.2),
+        backgroundColor: AppColors.background.withValues(alpha: 0.8),
+        indicatorColor: neonTheme.primary.withValues(alpha: 0.2),
         labelTextStyle: WidgetStateProperty.all(
           AppTextStyles.labelNeon.copyWith(fontSize: 10),
         ),

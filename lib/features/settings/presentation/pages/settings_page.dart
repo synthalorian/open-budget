@@ -10,6 +10,7 @@ import '../../../../shared/widgets/neon_ui_kit.dart';
 import '../../data/notification_settings_provider.dart';
 import '../../data/settings_providers.dart';
 import '../../../../core/services/security_service.dart';
+import '../../data/export_service.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -33,7 +34,15 @@ class SettingsPage extends ConsumerWidget {
           children: [
             _buildSectionHeader('IDENTITY'),
             const SizedBox(height: 16),
-            _buildSettingsItem(context, 'USER PROFILE', 'SYNTH_X_84', Icons.person_rounded, AppColors.primary, null),
+            _buildSettingsItem(
+              context,
+              'USER PROFILE',
+              appSettings.userName,
+              Icons.person_rounded,
+              AppColors.primary,
+              null,
+              onTap: () => _showUserNameEditor(context, settingsNotifier, appSettings),
+            ),
             _buildCurrencySelector(context, settingsNotifier, appSettings),
             
             const SizedBox(height: 32),
@@ -79,7 +88,15 @@ class SettingsPage extends ConsumerWidget {
             const SizedBox(height: 16),
             _buildSettingsItem(context, 'CLOUD_UPLINK', 'ENCRYPTED_SYNC', Icons.cloud_sync_rounded, AppColors.accent, '/cloud-sync'),
             _buildSettingsItem(context, 'EXPORT_ARCHIVE', 'JSON / CSV', Icons.download_rounded, AppColors.accent, '/export'),
-            _buildSettingsItem(context, 'CLEAR_MAIN_FRAME', 'DESTRUCTIVE', Icons.delete_forever_rounded, AppColors.expense, null),
+            _buildSettingsItem(
+              context,
+              'CLEAR_MAIN_FRAME',
+              'DESTRUCTIVE',
+              Icons.delete_forever_rounded,
+              AppColors.expense,
+              null,
+              onTap: () => showClearDataDialog(context, ref),
+            ),
             
             const SizedBox(height: 32),
             _buildSectionHeader('SECURITY'),
@@ -166,7 +183,7 @@ class SettingsPage extends ConsumerWidget {
         opacity: 0.2,
         hasGlow: value,
         glowColor: AppColors.accent,
-        borderColor: value ? AppColors.accent.withOpacity(0.5) : AppColors.surfaceLight,
+        borderColor: value ? AppColors.accent.withValues(alpha: 0.5) : AppColors.surfaceLight,
         child: Row(
           children: [
             Icon(icon, color: value ? AppColors.accent : AppColors.textMuted, size: 24),
@@ -183,8 +200,8 @@ class SettingsPage extends ConsumerWidget {
             Switch(
               value: value,
               onChanged: onChanged,
-              activeColor: AppColors.accent,
-              activeTrackColor: AppColors.accent.withOpacity(0.3),
+              activeThumbColor: AppColors.accent,
+              activeTrackColor: AppColors.accent.withValues(alpha: 0.3),
               inactiveThumbColor: AppColors.textMuted,
               inactiveTrackColor: AppColors.surfaceLight,
             ),
@@ -228,8 +245,8 @@ class SettingsPage extends ConsumerWidget {
                 Switch(
                   value: isEnabled,
                   onChanged: isAvailable ? (val) => notifier.toggleBiometrics(val) : null,
-                  activeColor: AppColors.accent,
-                  activeTrackColor: AppColors.accent.withOpacity(0.3),
+                  activeThumbColor: AppColors.accent,
+                  activeTrackColor: AppColors.accent.withValues(alpha: 0.3),
                   inactiveThumbColor: AppColors.textMuted,
                   inactiveTrackColor: AppColors.surfaceLight,
                 ),
@@ -267,6 +284,57 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
+  void _showUserNameEditor(BuildContext context, SettingsNotifier notifier, AppSettings settings) {
+    final controller = TextEditingController(text: settings.userName);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) => Padding(
+        padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('REASSIGN_IDENTITY', style: AppTextStyles.headlineMainframe.copyWith(fontSize: 18)),
+            const SizedBox(height: 24),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              style: AppTextStyles.bodyMain,
+              textCapitalization: TextCapitalization.characters,
+              decoration: InputDecoration(
+                labelText: 'USER_HANDLE',
+                labelStyle: AppTextStyles.labelNeon.copyWith(fontSize: 8, color: AppColors.textMuted),
+                prefixIcon: Icon(Icons.person_rounded, color: AppColors.accent, size: 20),
+                filled: true,
+                fillColor: AppColors.surfaceLight,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+              ),
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () {
+                  final name = controller.text.trim();
+                  if (name.isNotEmpty) {
+                    notifier.setUserName(name);
+                    Navigator.pop(context);
+                  }
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+                child: Text('COMMIT_IDENTITY', style: AppTextStyles.labelNeon.copyWith(color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showCurrencySelector(BuildContext context, SettingsNotifier notifier, AppSettings settings, Map<String, String> currencies) {
     showModalBottomSheet(
       context: context,
@@ -298,7 +366,7 @@ class SettingsPage extends ConsumerWidget {
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: isSelected ? AppColors.primary.withOpacity(0.2) : AppColors.surfaceLight,
+                        color: isSelected ? AppColors.primary.withValues(alpha: 0.2) : AppColors.surfaceLight,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isSelected ? AppColors.primary : Colors.transparent,
@@ -355,7 +423,7 @@ class SettingsPage extends ConsumerWidget {
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: isSelected ? theme.primary.withOpacity(0.2) : AppColors.surfaceLight,
+                        color: isSelected ? theme.primary.withValues(alpha: 0.2) : AppColors.surfaceLight,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isSelected ? theme.primary : Colors.transparent,
@@ -369,7 +437,7 @@ class SettingsPage extends ConsumerWidget {
                             decoration: BoxDecoration(
                               color: theme.primary,
                               shape: BoxShape.circle,
-                              boxShadow: [BoxShadow(color: theme.primary.withOpacity(0.5), blurRadius: 8)],
+                              boxShadow: [BoxShadow(color: theme.primary.withValues(alpha: 0.5), blurRadius: 8)],
                             ),
                           ),
                           const SizedBox(width: 16),

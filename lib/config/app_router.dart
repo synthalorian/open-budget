@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../features/budget/presentation/pages/budget_page.dart';
+import '../features/budget/presentation/pages/recurring_page.dart';
 import '../features/transactions/presentation/pages/home_page.dart';
 import '../features/transactions/presentation/pages/add_transaction_page.dart';
 import '../features/goals/presentation/pages/goals_page.dart';
@@ -104,6 +105,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: 'cloudSync',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: CloudSyncPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/recurring',
+            name: 'recurring',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: RecurringPage(),
             ),
           ),
         ],

@@ -21,13 +21,17 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     final velocity = _db.settings.get('enableVelocityWarnings') as bool? ?? true;
     final currency = _db.settings.get('currencyCode') as String? ?? 'USD';
     final biometric = _db.settings.get('biometricEnabled') as bool? ?? false;
-    
+    final themeName = _db.settings.get('themeName') as String? ?? 'synthwave';
+    final userName = _db.settings.get('userName') as String? ?? 'SYNTH_X_84';
+
     state = AppSettings(
       enableCollisionAlerts: collision,
       enableSystemCriticalAlerts: critical,
       enableVelocityWarnings: velocity,
       currencyCode: currency,
       biometricEnabled: biometric,
+      themeName: themeName,
+      userName: userName,
     );
   }
 
@@ -37,6 +41,8 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     await _db.settings.put('enableVelocityWarnings', newSettings.enableVelocityWarnings);
     await _db.settings.put('currencyCode', newSettings.currencyCode);
     await _db.settings.put('biometricEnabled', newSettings.biometricEnabled);
+    await _db.settings.put('themeName', newSettings.themeName);
+    await _db.settings.put('userName', newSettings.userName);
     state = newSettings;
   }
 
@@ -67,6 +73,11 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
 
   Future<void> setTheme(String themeName) async {
     final newSettings = state.copyWith(themeName: themeName);
+    await updateSettings(newSettings);
+  }
+
+  Future<void> setUserName(String userName) async {
+    final newSettings = state.copyWith(userName: userName);
     await updateSettings(newSettings);
   }
 }

@@ -29,15 +29,15 @@ class NeonCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.card.withOpacity(opacity),
+        color: AppColors.card.withValues(alpha: opacity),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: borderColor ?? effectiveGlowColor.withOpacity(0.3),
+          color: borderColor ?? effectiveGlowColor.withValues(alpha: 0.3),
           width: 1.5,
         ),
         boxShadow: hasGlow ? [
           BoxShadow(
-            color: effectiveGlowColor.withOpacity(0.12),
+            color: effectiveGlowColor.withValues(alpha: 0.12),
             blurRadius: blur,
             spreadRadius: 1,
           ),
@@ -116,15 +116,15 @@ class _NeonPulseOrbState extends State<NeonPulseOrb> with SingleTickerProviderSt
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  orbColor.withOpacity(0.6),
-                  orbColor.withOpacity(0.2),
+                  orbColor.withValues(alpha: 0.6),
+                  orbColor.withValues(alpha: 0.2),
                   Colors.transparent,
                 ],
                 stops: const [0.2, 0.7, 1.0],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: orbColor.withOpacity(0.3),
+                  color: orbColor.withValues(alpha: 0.3),
                   blurRadius: 30,
                   spreadRadius: 5,
                 ),
@@ -148,7 +148,7 @@ class _NeonPulseOrbState extends State<NeonPulseOrb> with SingleTickerProviderSt
                     style: TextStyle(
                       fontSize: 10,
                       letterSpacing: 2,
-                      color: orbColor.withOpacity(0.8),
+                      color: orbColor.withValues(alpha: 0.8),
                     ),
                   ),
                 ],
