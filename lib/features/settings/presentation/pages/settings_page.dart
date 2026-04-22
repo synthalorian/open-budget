@@ -122,7 +122,7 @@ class SettingsPage extends ConsumerWidget {
             const SizedBox(height: 48),
             Center(
               child: Text(
-                'OPEN_BUDGET v1.0.5\nBY SYNTH AND SYNTHCLAW 🎹🦞',
+                'OPEN_BUDGET v1.0.6\nBY SYNTH AND SYNTHCLAW 🎹🦞',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.labelNeon.copyWith(fontSize: 10, color: AppColors.textMuted),
               ),

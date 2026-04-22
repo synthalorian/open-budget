@@ -156,7 +156,9 @@ class RecurringPage extends ConsumerWidget {
     double amount = 0;
     int dayOfMonth = 1;
     Category? selectedCategory;
-    final categories = db.categories.values.where((c) => c.type == CategoryType.expense).toList();
+    final List<Category> categories = (db.categories.values as Iterable<Category>)
+        .where((c) => c.type == CategoryType.expense)
+        .toList();
     if (categories.isNotEmpty) selectedCategory = categories.first;
 
     showModalBottomSheet(

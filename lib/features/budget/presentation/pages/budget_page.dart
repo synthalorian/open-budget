@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/database/database_service.dart';
 import '../../../../core/domain/entities/budget.dart';
 import '../../../../core/domain/entities/category.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -64,11 +65,13 @@ class BudgetPage extends ConsumerWidget {
     );
   }
 
-  void _showAddBudgetSheet(BuildContext context, WidgetRef ref, dynamic db) {
+  void _showAddBudgetSheet(BuildContext context, WidgetRef ref, DatabaseService db) {
     double amount = 0;
     BudgetPeriod period = BudgetPeriod.monthly;
     Category? selectedCategory;
-    final categories = db.categories.values.where((c) => c.type == CategoryType.expense).toList();
+    final List<Category> categories = db.categories.values
+        .where((c) => c.type == CategoryType.expense)
+        .toList();
     if (categories.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -80,20 +83,10 @@ class BudgetPage extends ConsumerWidget {
     }
     selectedCategory = categories.first;
 
-    // DIAG v1.0.5: red background so we can tell if content area is zero-height.
-    // Colored diagnostic strips between each major widget so synth can report
-    // which sections render and which are invisible.
-    Widget diagStrip(String label, Color color) => Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(6),
-      color: color,
-      child: Text(label, style: const TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
-    );
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.red,
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => SingleChildScrollView(
@@ -104,10 +97,12 @@ class BudgetPage extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // DIAG v1.0.5: red background so we can tell if content area is zero-height.
+                // Colored diagnostic strips between each major widget.
                 diagStrip('A: start', Colors.yellow),
                 Text('INITIALIZE_BUDGET', style: AppTextStyles.headlineMainframe.copyWith(fontSize: 18)),
                 diagStrip('B: after title', Colors.cyan),
-                const SizedBox(height: 12),
+                const SizedBox(height: 24),
                 TextField(
                   style: AppTextStyles.bodyMain,
                   keyboardType: TextInputType.number,
@@ -115,7 +110,7 @@ class BudgetPage extends ConsumerWidget {
                   onChanged: (val) => amount = double.tryParse(val) ?? 0,
                 ),
                 diagStrip('C: after amount field', Colors.lime),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 Row(
                   children: [
                     Expanded(
@@ -123,7 +118,7 @@ class BudgetPage extends ConsumerWidget {
                         value: period,
                         dropdownColor: AppColors.surface,
                         decoration: _inputDecoration('PERIOD', Icons.calendar_month_rounded),
-                        items: BudgetPeriod.values.map((p) => DropdownMenuItem(
+                        items: BudgetPeriod.values.map<DropdownMenuItem<BudgetPeriod>>((p) => DropdownMenuItem<BudgetPeriod>(
                           value: p,
                           child: Text(p.name.toUpperCase(), style: const TextStyle(fontSize: 10)),
                         )).toList(),
@@ -132,21 +127,25 @@ class BudgetPage extends ConsumerWidget {
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: DropdownButtonFormField<Category>(
+                      child: categories.isNotEmpty ? DropdownButtonFormField<Category>(
                         value: selectedCategory,
                         dropdownColor: AppColors.surface,
                         decoration: _inputDecoration('CATEGORY', Icons.category_rounded),
-                        items: categories.map<DropdownMenuItem<Category>>((c) => DropdownMenuItem(
+                        items: categories.map<DropdownMenuItem<Category>>((c) => DropdownMenuItem<Category>(
                           value: c,
                           child: Text(c.name.toUpperCase(), style: const TextStyle(fontSize: 10)),
                         )).toList(),
                         onChanged: (val) => setState(() => selectedCategory = val),
+                      ) : Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(16),
+                        child: Text('NO_EXPENSE_CATEGORIES_DETECTED', style: AppTextStyles.labelNeon.copyWith(color: AppColors.warning)),
                       ),
                     ),
                   ],
                 ),
                 diagStrip('D: after dropdowns', Colors.orange),
-                const SizedBox(height: 12),
+                const SizedBox(height: 32),
                 SizedBox(
                   width: double.infinity,
                   height: 56,
