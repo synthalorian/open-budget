@@ -83,6 +83,15 @@ class BudgetPage extends ConsumerWidget {
     }
     selectedCategory = categories.first;
 
+    // DIAG v1.0.5: red background so we can tell if content area is zero-height.
+    // Colored diagnostic strips between each major widget.
+    Widget diagStrip(String label, Color color) => Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(6),
+      color: color,
+      child: Text(label, style: const TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
+    );
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
