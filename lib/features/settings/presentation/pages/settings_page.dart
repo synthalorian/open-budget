@@ -10,6 +10,7 @@ import '../../../../shared/widgets/neon_ui_kit.dart';
 import '../../data/notification_settings_provider.dart';
 import '../../data/settings_providers.dart';
 import '../../../../core/services/security_service.dart';
+import '../../../../main.dart' show lastFlutterError;
 import '../../data/export_service.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -97,6 +98,15 @@ class SettingsPage extends ConsumerWidget {
               null,
               onTap: () => showClearDataDialog(context, ref),
             ),
+            _buildSettingsItem(
+              context,
+              'VIEW_LAST_ERROR',
+              lastFlutterError.isEmpty ? 'NO ERRORS CAPTURED' : 'TAP TO VIEW',
+              Icons.bug_report_rounded,
+              AppColors.warning,
+              null,
+              onTap: () => _showLastError(context),
+            ),
             
             const SizedBox(height: 32),
             _buildSectionHeader('SECURITY'),
@@ -112,7 +122,7 @@ class SettingsPage extends ConsumerWidget {
             const SizedBox(height: 48),
             Center(
               child: Text(
-                'OPEN_BUDGET v1.0.3\nBY SYNTH AND SYNTHCLAW 🎹🦞',
+                'OPEN_BUDGET v1.0.4\nBY SYNTH AND SYNTHCLAW 🎹🦞',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.labelNeon.copyWith(fontSize: 10, color: AppColors.textMuted),
               ),
@@ -281,6 +291,28 @@ class SettingsPage extends ConsumerWidget {
       AppColors.primary, 
       null,
       onTap: () => _showThemeSelector(context, notifier, settings),
+    );
+  }
+
+  void _showLastError(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text('LAST_ERROR', style: AppTextStyles.labelNeon.copyWith(color: AppColors.warning)),
+        content: SingleChildScrollView(
+          child: SelectableText(
+            lastFlutterError.isEmpty ? 'No errors captured since app start.' : lastFlutterError,
+            style: AppTextStyles.bodyMain.copyWith(fontSize: 11),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('CLOSE', style: TextStyle(color: AppColors.textMuted)),
+          ),
+        ],
+      ),
     );
   }
 

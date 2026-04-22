@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import 'core/database/database_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/encryption_service.dart';
@@ -12,9 +14,25 @@ import 'features/settings/presentation/pages/security_lock_screen.dart';
 
 import 'shared/providers/theme_provider.dart';
 
+String lastFlutterError = '';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
+  // Diag: capture Flutter errors to a visible buffer + persist to a file
+  // the user can retrieve via Export or adb pull.
+  FlutterError.onError = (FlutterErrorDetails details) async {
+    lastFlutterError = '${DateTime.now().toIso8601String()}\n'
+        '${details.exceptionAsString()}\n\n'
+        '${details.stack}';
+    FlutterError.presentError(details);
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final f = File('${dir.path}/last_error.log');
+      await f.writeAsString(lastFlutterError);
+    } catch (_) {}
+  };
+
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

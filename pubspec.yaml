@@ -1,7 +1,7 @@
 name: open_budget
 description: "A fully free, open source finances app that helps people budget, teaches money saving strategies, and tracks spending."
 publish_to: 'none'
-version: 1.0.3+4
+version: 1.0.4+5
 
 environment:
   sdk: ">=3.4.0 <4.0.0"

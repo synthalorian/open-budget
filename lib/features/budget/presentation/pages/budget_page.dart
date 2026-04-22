@@ -57,7 +57,26 @@ class BudgetPage extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddBudgetSheet(context, ref, db),
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('DIAG: FAB fired, opening sheet...'),
+            duration: Duration(seconds: 2),
+          ));
+          showModalBottomSheet(
+            context: context,
+            backgroundColor: Colors.red,
+            builder: (ctx) => Container(
+              height: 300,
+              color: Colors.red,
+              alignment: Alignment.center,
+              child: const Text(
+                'DIAG v1.0.4: IF YOU SEE THIS RED BOX,\nTHE SHEET WORKS.',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        },
         backgroundColor: AppColors.primary,
         child: Icon(Icons.add_rounded, size: 32),
       ),
