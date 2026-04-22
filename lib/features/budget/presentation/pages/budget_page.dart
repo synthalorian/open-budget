@@ -67,84 +67,116 @@ class BudgetPage extends ConsumerWidget {
   void _showAddBudgetSheet(BuildContext context, WidgetRef ref, dynamic db) {
     double amount = 0;
     BudgetPeriod period = BudgetPeriod.monthly;
-    Category? selectedCategory;
     final categories = db.categories.values
         .where((c) => c.type == CategoryType.expense || c.type == CategoryType.both)
         .toList()
         .cast<Category>();
-    if (categories.isNotEmpty) selectedCategory = categories.first;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => Padding(
-          padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 40),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('INITIALIZE_BUDGET', style: AppTextStyles.headlineMainframe.copyWith(fontSize: 18)),
-              const SizedBox(height: 24),
-              TextField(
-                style: AppTextStyles.bodyMain,
-                keyboardType: TextInputType.number,
-                decoration: _inputDecoration('AMOUNT', Icons.monetization_on_rounded),
-                onChanged: (val) => amount = double.tryParse(val) ?? 0,
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<Category>(
-                value: selectedCategory,
-                dropdownColor: AppColors.surface,
-                decoration: _inputDecoration('CATEGORY', Icons.category_rounded),
-                items: categories.map<DropdownMenuItem<Category>>((c) => DropdownMenuItem(
-                  value: c,
-                  child: Text(c.name.toUpperCase(), style: const TextStyle(fontSize: 12)),
-                )).toList(),
-                onChanged: (val) => setState(() => selectedCategory = val),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<BudgetPeriod>(
-                value: period,
-                dropdownColor: AppColors.surface,
-                decoration: _inputDecoration('PERIOD', Icons.calendar_month_rounded),
-                items: BudgetPeriod.values
-                    .map((p) => DropdownMenuItem(value: p, child: Text(p.name.toUpperCase(), style: const TextStyle(fontSize: 12))))
-                    .toList(),
-                onChanged: (val) => setState(() => period = val ?? BudgetPeriod.monthly),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (amount > 0 && selectedCategory != null) {
-                      final now = DateTime.now();
-                      final budget = Budget(
-                        id: const Uuid().v4(),
-                        name: selectedCategory!.name,
-                        amount: amount,
-                        period: period,
-                        type: BudgetType.category,
-                        categoryId: selectedCategory!.id,
-                        startDate: now,
-                        createdAt: now,
-                      );
-                      ref.read(budgetNotifierProvider.notifier).createBudget(budget);
-                      Navigator.pop(context);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-                  child: Text('COMMIT_BUDGET', style: AppTextStyles.labelNeon.copyWith(color: Colors.white)),
+      builder: (context) {
+        if (categories.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(24, 32, 24, 40),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('NO_CATEGORIES_DETECTED', style: AppTextStyles.headlineMainframe.copyWith(fontSize: 18, color: AppColors.expense)),
+                const SizedBox(height: 12),
+                Text(
+                  'Create at least one expense category before initializing a budget.',
+                  style: AppTextStyles.bodyMain,
                 ),
-              ),
-            ],
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      context.push('/categories');
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+                    child: Text('OPEN_CATEGORIES', style: AppTextStyles.labelNeon.copyWith(color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        Category selectedCategory = categories.first;
+        return StatefulBuilder(
+          builder: (context, setState) => SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 40),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('INITIALIZE_BUDGET', style: AppTextStyles.headlineMainframe.copyWith(fontSize: 18)),
+                const SizedBox(height: 24),
+                TextField(
+                  style: AppTextStyles.bodyMain,
+                  keyboardType: TextInputType.number,
+                  decoration: _inputDecoration('AMOUNT', Icons.monetization_on_rounded),
+                  onChanged: (val) => amount = double.tryParse(val) ?? 0,
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<Category>(
+                  value: selectedCategory,
+                  dropdownColor: AppColors.surface,
+                  decoration: _inputDecoration('CATEGORY', Icons.category_rounded),
+                  items: categories.map<DropdownMenuItem<Category>>((c) => DropdownMenuItem(
+                    value: c,
+                    child: Text(c.name.toUpperCase(), style: const TextStyle(fontSize: 12)),
+                  )).toList(),
+                  onChanged: (val) => setState(() { if (val != null) selectedCategory = val; }),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<BudgetPeriod>(
+                  value: period,
+                  dropdownColor: AppColors.surface,
+                  decoration: _inputDecoration('PERIOD', Icons.calendar_month_rounded),
+                  items: BudgetPeriod.values
+                      .map((p) => DropdownMenuItem(value: p, child: Text(p.name.toUpperCase(), style: const TextStyle(fontSize: 12))))
+                      .toList(),
+                  onChanged: (val) => setState(() => period = val ?? BudgetPeriod.monthly),
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (amount > 0) {
+                        final now = DateTime.now();
+                        final budget = Budget(
+                          id: const Uuid().v4(),
+                          name: selectedCategory.name,
+                          amount: amount,
+                          period: period,
+                          type: BudgetType.category,
+                          categoryId: selectedCategory.id,
+                          startDate: now,
+                          createdAt: now,
+                        );
+                        ref.read(budgetNotifierProvider.notifier).createBudget(budget);
+                        Navigator.pop(context);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+                    child: Text('COMMIT_BUDGET', style: AppTextStyles.labelNeon.copyWith(color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

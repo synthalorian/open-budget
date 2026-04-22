@@ -6,6 +6,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/database/database_service.dart';
+import '../../budget/data/budget_providers.dart';
+import '../../budget/data/recurring_providers.dart';
+import '../../categories/data/category_providers.dart';
+import '../../goals/data/goal_providers.dart';
 import '../../transactions/data/transaction_providers.dart';
 import '../../insights/data/insights_providers.dart';
 
@@ -505,6 +509,11 @@ void showClearDataDialog(BuildContext context, WidgetRef ref) {
         ElevatedButton(
           onPressed: () async {
             await DatabaseService().clearAllData();
+            ref.invalidate(transactionsProvider);
+            ref.invalidate(budgetsProvider);
+            ref.invalidate(categoriesProvider);
+            ref.invalidate(recurringTransactionsProvider);
+            ref.invalidate(goalsProvider);
             if (ctx.mounted) {
               Navigator.pop(ctx);
               ScaffoldMessenger.of(context).showSnackBar(

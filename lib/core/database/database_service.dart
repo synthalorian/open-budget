@@ -87,6 +87,10 @@ class DatabaseService {
     await _progressBox.clear();
     await _recurringBox.clear();
     // Keep settings for user preferences
+    // Re-seed defaults so downstream UI (budget/recurring dropdowns, education list)
+    // keeps working without an app restart.
+    await _initializeDefaultCategories();
+    await _initializeDefaultProgress();
   }
 
 }
