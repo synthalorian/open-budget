@@ -57,26 +57,7 @@ class BudgetPage extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('DIAG: FAB fired, opening sheet...'),
-            duration: Duration(seconds: 2),
-          ));
-          showModalBottomSheet(
-            context: context,
-            backgroundColor: Colors.red,
-            builder: (ctx) => Container(
-              height: 300,
-              color: Colors.red,
-              alignment: Alignment.center,
-              child: const Text(
-                'DIAG v1.0.4: IF YOU SEE THIS RED BOX,\nTHE SHEET WORKS.',
-                style: TextStyle(color: Colors.white, fontSize: 20),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          );
-        },
+        onPressed: () => _showAddBudgetSheet(context, ref, db),
         backgroundColor: AppColors.primary,
         child: Icon(Icons.add_rounded, size: 32),
       ),
@@ -99,10 +80,20 @@ class BudgetPage extends ConsumerWidget {
     }
     selectedCategory = categories.first;
 
+    // DIAG v1.0.5: red background so we can tell if content area is zero-height.
+    // Colored diagnostic strips between each major widget so synth can report
+    // which sections render and which are invisible.
+    Widget diagStrip(String label, Color color) => Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(6),
+      color: color,
+      child: Text(label, style: const TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
+    );
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.surface,
+      backgroundColor: Colors.red,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => Padding(
@@ -111,15 +102,18 @@ class BudgetPage extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              diagStrip('A: start', Colors.yellow),
               Text('INITIALIZE_BUDGET', style: AppTextStyles.headlineMainframe.copyWith(fontSize: 18)),
-              const SizedBox(height: 24),
+              diagStrip('B: after title', Colors.cyan),
+              const SizedBox(height: 12),
               TextField(
                 style: AppTextStyles.bodyMain,
                 keyboardType: TextInputType.number,
                 decoration: _inputDecoration('AMOUNT', Icons.monetization_on_rounded),
                 onChanged: (val) => amount = double.tryParse(val) ?? 0,
               ),
-              const SizedBox(height: 16),
+              diagStrip('C: after amount field', Colors.lime),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
@@ -149,7 +143,8 @@ class BudgetPage extends ConsumerWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 32),
+              diagStrip('D: after dropdowns', Colors.orange),
+              const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -175,6 +170,7 @@ class BudgetPage extends ConsumerWidget {
                   child: Text('COMMIT_BUDGET', style: AppTextStyles.labelNeon.copyWith(color: Colors.white)),
                 ),
               ),
+              diagStrip('E: end', Colors.pink),
             ],
           ),
         ),
