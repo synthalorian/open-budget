@@ -35,7 +35,7 @@ class HomePage extends ConsumerWidget {
         ],
       ),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.spaceGradient),
+        decoration: BoxDecoration(gradient: AppColors.spaceGradient),
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 120),
           child: Column(
@@ -54,7 +54,7 @@ class HomePage extends ConsumerWidget {
               else
                 ...transactions.take(5).map((t) {
                   final category = db.categories.get(t.categoryId);
-                  return _buildTransactionCard(t, category, currencyFormat);
+                  return _buildTransactionCard(context, ref, t, category, currencyFormat);
                 }).toList(),
             ],
           ),
@@ -170,36 +170,115 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildTransactionCard(dynamic t, dynamic category, NumberFormat currency) {
+  Widget _buildTransactionCard(BuildContext context, WidgetRef ref, dynamic t, dynamic category, NumberFormat currency) {
     final color = Color(category?.color ?? 0xFF9D50BB);
-    return NeonCard(
-      padding: const EdgeInsets.all(12),
-      opacity: 0.2,
-      hasGlow: false,
-      borderColor: AppColors.surfaceLight,
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(_getIcon(category?.iconName ?? 'more_horiz'), color: color, size: 20),
+    final accent = t.isIncome ? AppColors.income : AppColors.expense;
+    return Dismissible(
+      key: ValueKey('tx-${t.id}'),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        alignment: Alignment.centerRight,
+        decoration: BoxDecoration(
+          color: AppColors.expense.withValues(alpha: 0.18),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.expense.withValues(alpha: 0.5)),
+        ),
+        child: Icon(Icons.delete_forever_rounded, color: AppColors.expense),
+      ),
+      confirmDismiss: (_) => _confirmDelete(context, t, accent),
+      onDismissed: (_) {
+        ref.read(transactionNotifierProvider.notifier).deleteTransaction(t.id);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${t.isIncome ? "INFLOW" : "OUTFLOW"} PURGED', style: AppTextStyles.labelNeon.copyWith(color: accent)),
+            backgroundColor: AppColors.surface,
+            duration: const Duration(seconds: 2),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(t.description, style: AppTextStyles.headlineTitle.copyWith(fontSize: 14), maxLines: 1, overflow: TextOverflow.ellipsis),
-                Text(category?.name ?? 'SYSTEM', style: AppTextStyles.bodyMain.copyWith(fontSize: 10)),
-              ],
-            ),
+        );
+      },
+      child: GestureDetector(
+        onLongPress: () async {
+          final ok = await _confirmDelete(context, t, accent) ?? false;
+          if (ok) {
+            ref.read(transactionNotifierProvider.notifier).deleteTransaction(t.id);
+          }
+        },
+        child: NeonCard(
+          padding: const EdgeInsets.all(12),
+          opacity: 0.2,
+          hasGlow: false,
+          borderColor: AppColors.surfaceLight,
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(_getIcon(category?.iconName ?? 'more_horiz'), color: color, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      t.description.toString().isEmpty ? '(no description)' : t.description,
+                      style: AppTextStyles.headlineTitle.copyWith(fontSize: 14),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(category?.name ?? 'SYSTEM', style: AppTextStyles.bodyMain.copyWith(fontSize: 10)),
+                  ],
+                ),
+              ),
+              Text(
+                '${t.isIncome ? '+' : '-'}${currency.format(t.amount)}',
+                style: AppTextStyles.headlineTitle.copyWith(fontSize: 14, color: accent),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                icon: Icon(Icons.delete_outline_rounded, color: AppColors.textMuted, size: 18),
+                tooltip: 'PURGE',
+                onPressed: () async {
+                  final ok = await _confirmDelete(context, t, accent) ?? false;
+                  if (ok) {
+                    ref.read(transactionNotifierProvider.notifier).deleteTransaction(t.id);
+                  }
+                },
+              ),
+            ],
           ),
-          Text(
-            '${t.isIncome ? '+' : '-'}${currency.format(t.amount)}',
-            style: AppTextStyles.headlineTitle.copyWith(fontSize: 14, color: t.isIncome ? AppColors.income : AppColors.expense),
+        ),
+      ),
+    );
+  }
+
+  Future<bool?> _confirmDelete(BuildContext context, dynamic t, Color accent) {
+    final label = t.isIncome ? 'INFLOW' : 'OUTFLOW';
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text('PURGE $label?', style: AppTextStyles.labelNeon.copyWith(color: accent)),
+        content: Text(
+          'Removing "${t.description.toString().isEmpty ? "(no description)" : t.description}" cannot be undone.',
+          style: AppTextStyles.bodyMain.copyWith(fontSize: 13),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('CANCEL', style: TextStyle(color: AppColors.textMuted)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('PURGE', style: TextStyle(color: AppColors.expense)),
           ),
         ],
       ),

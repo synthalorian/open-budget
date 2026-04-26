@@ -41,7 +41,7 @@ class _SecurityLockScreenState extends ConsumerState<SecurityLockScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.spaceGradient),
+        decoration: BoxDecoration(gradient: AppColors.spaceGradient),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

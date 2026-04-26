@@ -56,7 +56,7 @@ class _AddGoalPageState extends ConsumerState<AddGoalPage> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(title: Text('NEW TARGET', style: AppTextStyles.headlineMainframe)),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.spaceGradient),
+        decoration: BoxDecoration(gradient: AppColors.spaceGradient),
         child: Form(
           key: _formKey,
           child: ListView(

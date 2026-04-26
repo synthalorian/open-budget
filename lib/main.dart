@@ -39,9 +39,10 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   
-  // Set system UI overlay style
+  // Set system UI overlay style. AppColors.background is now theme-driven,
+  // so this can't be const anymore.
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
+    SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
       systemNavigationBarColor: AppColors.background,

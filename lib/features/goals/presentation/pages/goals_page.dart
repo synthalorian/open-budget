@@ -20,7 +20,7 @@ class GoalsPage extends ConsumerWidget {
         title: Text('TARGETS', style: AppTextStyles.headlineMainframe),
       ),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.spaceGradient),
+        decoration: BoxDecoration(gradient: AppColors.spaceGradient),
         child: goalsProgress.isEmpty && completedGoals.isEmpty
             ? Center(
                 child: Column(

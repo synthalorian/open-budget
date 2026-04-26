@@ -23,7 +23,7 @@ class CategoriesPage extends ConsumerWidget {
         title: Text('MODULE_LIBRARY', style: AppTextStyles.headlineMainframe.copyWith(fontSize: 20)),
       ),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.spaceGradient),
+        decoration: BoxDecoration(gradient: AppColors.spaceGradient),
         child: ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 120),
           itemCount: categories.length,

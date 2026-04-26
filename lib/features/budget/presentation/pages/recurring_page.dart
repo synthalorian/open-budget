@@ -29,7 +29,7 @@ class RecurringPage extends ConsumerWidget {
         title: Text('CHRONOS_MODULE', style: AppTextStyles.headlineMainframe),
       ),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.spaceGradient),
+        decoration: BoxDecoration(gradient: AppColors.spaceGradient),
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 120),
           children: [

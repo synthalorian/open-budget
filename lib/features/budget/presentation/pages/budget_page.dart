@@ -35,7 +35,7 @@ class BudgetPage extends ConsumerWidget {
         ],
       ),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.spaceGradient),
+        decoration: BoxDecoration(gradient: AppColors.spaceGradient),
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 100),
           child: Column(

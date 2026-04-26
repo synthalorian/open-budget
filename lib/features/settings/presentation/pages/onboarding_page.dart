@@ -57,7 +57,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.spaceGradient),
+        decoration: BoxDecoration(gradient: AppColors.spaceGradient),
         child: Stack(
           children: [
             PageView.builder(

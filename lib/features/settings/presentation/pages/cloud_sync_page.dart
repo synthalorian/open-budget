@@ -23,7 +23,7 @@ class CloudSyncPage extends ConsumerWidget {
         title: Text('ENCRYPTED_UPLINK', style: AppTextStyles.headlineMainframe.copyWith(fontSize: 20)),
       ),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.spaceGradient),
+        decoration: BoxDecoration(gradient: AppColors.spaceGradient),
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 120),
           child: Column(

@@ -29,7 +29,7 @@ class SettingsPage extends ConsumerWidget {
         title: Text('CORE CONFIG', style: AppTextStyles.headlineMainframe),
       ),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.spaceGradient),
+        decoration: BoxDecoration(gradient: AppColors.spaceGradient),
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 120),
           children: [
@@ -122,7 +122,7 @@ class SettingsPage extends ConsumerWidget {
             const SizedBox(height: 48),
             Center(
               child: Text(
-                'OPEN_BUDGET v1.0.7\nBY SYNTH AND SYNTHCLAW 🎹🦞',
+                'OPEN_BUDGET v1.0.8\nBY SYNTH AND SYNTHCLAW 🎹🦞',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.labelNeon.copyWith(fontSize: 10, color: AppColors.textMuted),
               ),

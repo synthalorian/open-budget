@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -6,25 +7,27 @@ import '../../../../shared/widgets/neon_ui_kit.dart';
 import '../../../../core/database/database_service.dart';
 import '../../../../core/domain/entities/transaction.dart';
 import '../../../../core/domain/entities/category.dart';
+import '../../data/transaction_providers.dart';
 
-class AddTransactionPage extends StatefulWidget {
+class AddTransactionPage extends ConsumerStatefulWidget {
   final bool isIncome;
 
   const AddTransactionPage({super.key, this.isIncome = false});
 
   @override
-  State<AddTransactionPage> createState() => _AddTransactionPageState();
+  ConsumerState<AddTransactionPage> createState() => _AddTransactionPageState();
 }
 
-class _AddTransactionPageState extends State<AddTransactionPage>
+class _AddTransactionPageState extends ConsumerState<AddTransactionPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
+
   Category? _selectedCategory;
   final DateTime _selectedDate = DateTime.now();
+  bool _saving = false;
   bool get _isIncome => _tabController.index == 1;
 
   @override
@@ -36,7 +39,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
       initialIndex: widget.isIncome ? 1 : 0,
     );
     _tabController.addListener(() => setState(() {}));
-    
+
     final categories = DatabaseService().categories.values.toList();
     if (categories.isNotEmpty) {
       _selectedCategory = categories.first;
@@ -75,7 +78,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.spaceGradient),
+        decoration: BoxDecoration(gradient: AppColors.spaceGradient),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -194,31 +197,47 @@ class _AddTransactionPageState extends State<AddTransactionPage>
         padding: EdgeInsets.zero,
         glowColor: color,
         child: InkWell(
-          onTap: _save,
+          onTap: _saving ? null : _save,
           borderRadius: BorderRadius.circular(24),
           child: Center(
-            child: Text(
-              _isIncome ? 'COMMIT_INFLOW' : 'COMMIT_OUTFLOW',
-              style: AppTextStyles.labelNeon.copyWith(color: color, fontSize: 16),
-            ),
+            child: _saving
+                ? SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: color),
+                  )
+                : Text(
+                    _isIncome ? 'COMMIT_INFLOW' : 'COMMIT_OUTFLOW',
+                    style: AppTextStyles.labelNeon.copyWith(color: color, fontSize: 16),
+                  ),
           ),
         ),
       ),
     );
   }
 
-  void _save() async {
-    if (_amountController.text.isEmpty) return;
+  Future<void> _save() async {
+    final raw = _amountController.text.trim();
+    if (raw.isEmpty) return;
+    final amount = double.tryParse(raw);
+    if (amount == null || amount <= 0) return;
+    if (_selectedCategory == null) return;
+
+    setState(() => _saving = true);
     final transaction = Transaction(
       id: const Uuid().v4(),
-      amount: double.parse(_amountController.text),
+      amount: amount,
       categoryId: _selectedCategory!.id,
       description: _descriptionController.text,
       date: _selectedDate,
       isIncome: _isIncome,
       createdAt: DateTime.now(),
     );
-    await DatabaseService().transactions.put(transaction.id, transaction);
+
+    // Route through the notifier so transactionsProvider gets invalidated.
+    // Direct box.put bypassed the cache and made The Grid look stale until
+    // some other action triggered a rebuild — that was the "delay".
+    await ref.read(transactionNotifierProvider.notifier).addTransaction(transaction);
     if (!mounted) return;
     context.pop();
   }

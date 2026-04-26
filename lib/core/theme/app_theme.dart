@@ -3,25 +3,25 @@ import 'package:google_fonts/google_fonts.dart';
 import 'neon_themes.dart';
 
 class AppColors {
-  // These will now be driven by the current theme
+  // All driven by the active theme so non-dark palettes (normal_light) work.
   static Color get primary => currentTheme.primary;
   static Color get secondary => currentTheme.secondary;
   static Color get accent => currentTheme.accent;
-  
+
   static Color get income => currentTheme.income;
   static Color get expense => currentTheme.expense;
   static Color get warning => currentTheme.warning;
   static Color get info => currentTheme.accent;
-  
-  static const Color background = Color(0xFF0B0B15); 
-  static const Color surface = Color(0xFF161625); 
-  static const Color surfaceLight = Color(0xFF212135); 
-  static const Color card = Color(0xFF1C1C2E); 
-  
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFB4B4C4);
-  static const Color textMuted = Color(0xFF5A5A7A);
-  
+
+  static Color get background => currentTheme.background;
+  static Color get surface => currentTheme.surface;
+  static Color get surfaceLight => currentTheme.surfaceLight;
+  static Color get card => currentTheme.card;
+
+  static Color get textPrimary => currentTheme.textPrimary;
+  static Color get textSecondary => currentTheme.textSecondary;
+  static Color get textMuted => currentTheme.textMuted;
+
   // Global theme state holder (internal use)
   static NeonTheme currentTheme = NeonThemes.synthwave;
 
@@ -32,18 +32,26 @@ class AppColors {
       spreadRadius: 2,
     ),
   ];
-  
+
   static LinearGradient get neonGradient => LinearGradient(
     colors: [primary, accent],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-  
-  static const LinearGradient spaceGradient = LinearGradient(
-    colors: [background, Color(0xFF1A1A2E)],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-  );
+
+  // Was const; now follows the active theme so light mode doesn't render on
+  // a hardcoded dark gradient.
+  static LinearGradient get spaceGradient {
+    final isLight = currentTheme.brightness == Brightness.light;
+    return LinearGradient(
+      colors: [
+        currentTheme.background,
+        isLight ? currentTheme.surfaceLight : const Color(0xFF1A1A2E),
+      ],
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+    );
+  }
 }
 
 class AppTextStyles {
@@ -85,16 +93,25 @@ class AppTheme {
     // Update the static holder for legacy code support
     AppColors.currentTheme = neonTheme;
 
+    final isLight = neonTheme.brightness == Brightness.light;
+
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: neonTheme.brightness,
       scaffoldBackgroundColor: AppColors.background,
-      colorScheme: ColorScheme.dark(
-        primary: neonTheme.primary,
-        secondary: neonTheme.accent,
-        surface: AppColors.surface,
-        error: neonTheme.expense,
-      ),
+      colorScheme: isLight
+          ? ColorScheme.light(
+              primary: neonTheme.primary,
+              secondary: neonTheme.accent,
+              surface: AppColors.surface,
+              error: neonTheme.expense,
+            )
+          : ColorScheme.dark(
+              primary: neonTheme.primary,
+              secondary: neonTheme.accent,
+              surface: AppColors.surface,
+              error: neonTheme.expense,
+            ),
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -126,7 +143,7 @@ class AppTheme {
           if (states.contains(WidgetState.selected)) {
             return IconThemeData(color: neonTheme.accent);
           }
-          return const IconThemeData(color: AppColors.textMuted);
+          return IconThemeData(color: AppColors.textMuted);
         }),
       ),
     );
